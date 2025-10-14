@@ -37,7 +37,7 @@ docker-push: docker
 
 test:
 	cd test && \
-	   sed "s|_|$$(pwd)|g" < index.html.template > index.html && \
-	   html2docx index.html output.docx && \
-	   ls -lash output.docx && \
-           open output.docx
+	 sed "s|_|$$(pwd)|g" < index.html.template > index.html && \
+	 html2docx index.html output.docx && \
+	 ls -lash output.docx && \
+         open output.docx

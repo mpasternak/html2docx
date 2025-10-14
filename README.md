@@ -93,6 +93,9 @@ html2docx report.html report.docx
 
 # Pipe HTML from another command
 curl -s "https://example.com" | html2docx > webpage.docx
+
+# Show stack trace on errors (useful for debugging)
+html2docx input.html output.docx --stacktrace
 ```
 
 ### Option 3: Docker
@@ -171,12 +174,13 @@ services:
 The program supports the following command-line arguments:
 
 ```bash
-html2docx [input_file] [output_file]
+html2docx [input_file] [output_file] [options]
 ```
 
 - **input_file**: HTML file to convert (use `-` for stdin, default: stdin)
 - **output_file**: DOCX output file (default: stdout)
 - **--help**: Show help message
+- **--stacktrace**: Show detailed stack trace on errors (useful for debugging)
 
 ### Examples
 
@@ -195,5 +199,8 @@ html2docx input.html output.docx
 
 # Show help
 html2docx --help
+
+# Show stack trace on errors (useful for debugging)
+html2docx input.html output.docx --stacktrace
 ```
 
