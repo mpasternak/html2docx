@@ -114,6 +114,49 @@ make docker-push
 docker push iplweb/html2docx:latest
 ```
 
+## GitHub Actions CI/CD
+
+This project includes automated Docker image building and pushing via GitHub Actions. The workflow is triggered on:
+
+- Push to `main`/`master` branches
+- Pull requests to `main`/`master` branches  
+- Release publications
+
+## Usage
+
+The program supports the following command-line arguments:
+
+```bash
+html2docx [input_file] [output_file] [options]
+```
+
+- **input_file**: HTML file to convert (use `-` for stdin, default: stdin)
+- **output_file**: DOCX output file (default: stdout)
+- **--help**: Show help message
+- **--stacktrace**: Show detailed stack trace on errors (useful for debugging)
+
+### Examples
+
+```bash
+# Read from stdin, write to stdout
+echo "<h1>Hello World</h1>" | html2docx > output.docx
+
+# Read from file, write to stdout
+html2docx input.html > output.docx
+
+# Read from stdin, write to file
+echo "<h1>Hello World</h1>" | html2docx - output.docx
+
+# Read from file, write to file
+html2docx input.html output.docx
+
+# Show help
+html2docx --help
+
+# Show stack trace on errors (useful for debugging)
+html2docx input.html output.docx --stacktrace
+```
+
 #### Docker Usage Examples:
 
 **Example 1: Basic usage with pipe**
@@ -158,49 +201,5 @@ services:
     image: iplweb/html2docx:latest
     # This service can be used by other containers
     # via Docker network: docker exec web-app html2docx ...
-```
-
-## ⚠️ Security Warning
-
-**This software parses HTML as-is without any cleaning, validation, or sanitization.** 
-
-- It does not perform HTML validation or cleanup
-- It is prone to fail when the HTML file is malformed or contains invalid markup
-- It does not protect against malicious HTML content
-- Use with caution and only with trusted HTML sources
-
-## Usage
-
-The program supports the following command-line arguments:
-
-```bash
-html2docx [input_file] [output_file] [options]
-```
-
-- **input_file**: HTML file to convert (use `-` for stdin, default: stdin)
-- **output_file**: DOCX output file (default: stdout)
-- **--help**: Show help message
-- **--stacktrace**: Show detailed stack trace on errors (useful for debugging)
-
-### Examples
-
-```bash
-# Read from stdin, write to stdout
-echo "<h1>Hello World</h1>" | html2docx > output.docx
-
-# Read from file, write to stdout
-html2docx input.html > output.docx
-
-# Read from stdin, write to file
-echo "<h1>Hello World</h1>" | html2docx - output.docx
-
-# Read from file, write to file
-html2docx input.html output.docx
-
-# Show help
-html2docx --help
-
-# Show stack trace on errors (useful for debugging)
-html2docx input.html output.docx --stacktrace
 ```
 
