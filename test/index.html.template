@@ -1,0 +1,27 @@
+<body>
+
+  <h1>html2docx test</h1>
+
+  <h2>table test</h2>
+  <p>
+    <table>
+      <tr><th>col 1</th><th>col 2</th></tr>
+      <tr><td>val 1</td><td>val 2</td></tr>
+    </table>
+  </p>
+
+  <h2>Image tests</h2>
+
+  <h3>Image from the web</h3>
+  <p>
+    Image linked on the web:</br>
+    <img src="https://picsum.photos/100/100">
+  </p>
+
+  <h3>Image from local disk</h3>
+  <p>
+    Image from the local dir - looks like we need an abolute path, so I substituted the underscore with <code>_</code></br>
+    <img src="file://_/test.jpg" width="1000">
+  </p>
+  
+</body>

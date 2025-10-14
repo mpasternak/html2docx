@@ -1,4 +1,4 @@
-.PHONY: help build install docker docker-push
+.PHONY: help build install docker docker-push test
 
 # Default target
 help:
@@ -34,3 +34,10 @@ docker:
 docker-push: docker
 	@echo "Pushing Docker image to Docker Hub..."
 	docker push iplweb/html2docx:latest
+
+test:
+	cd test && \
+	   sed "s|_|$$(pwd)|g" < index.html.template > index.html && \
+	   html2docx index.html output.docx && \
+	   ls -lash output.docx && \
+           open output.docx

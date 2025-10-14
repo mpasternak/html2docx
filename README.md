@@ -1,5 +1,33 @@
 # html2docx-dotnet
-As pandoc is failing on VMWare ESX with Core Dumped, another solution emerges...
+
+## Project Description
+
+html2docx-dotnet is a .NET 8.0 command-line tool that converts HTML documents to DOCX format. This project was created as an alternative to pandoc when experiencing core dump issues on VMWare ESX environments.
+
+The application provides a simple, efficient way to convert HTML content to Microsoft Word documents without the complexity and dependencies of larger conversion tools. It's designed to handle standard HTML markup and generate properly formatted DOCX files suitable for further editing or distribution.
+
+### Key Features
+
+- Lightweight .NET 8.0 application
+- Command-line interface for easy integration
+- Support for stdin/stdout pipeline operations
+- Docker containerization for cross-platform deployment
+- Direct file-to-file conversion
+- Simple, dependency-light implementation
+
+## ⚠️ Security Warning
+
+**This software parses HTML as-is without any cleaning, validation, or sanitization.**
+
+For some cases, this could be considered a gaping security hole. 
+
+- IT WILL DOWNLOAD THINGS OVER THE INTERNET, IF LINKED IN HTML FILE
+- It does not perform HTML validation or cleanup
+- It is prone to fail when the HTML file is malformed or contains invalid markup
+- It does not protect against malicious HTML content
+- Use with caution and only with trusted HTML sources
+
+TL,DR: if it fails on compilicated web page with a lot of JavaScript and CSS, use some other tool like bleach before conversion. 
 
 ## Installation
 
@@ -128,6 +156,15 @@ services:
     # This service can be used by other containers
     # via Docker network: docker exec web-app html2docx ...
 ```
+
+## ⚠️ Security Warning
+
+**This software parses HTML as-is without any cleaning, validation, or sanitization.** 
+
+- It does not perform HTML validation or cleanup
+- It is prone to fail when the HTML file is malformed or contains invalid markup
+- It does not protect against malicious HTML content
+- Use with caution and only with trusted HTML sources
 
 ## Usage
 
