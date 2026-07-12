@@ -23,5 +23,5 @@
     Image from the local dir - looks like we need an abolute path, so I substituted the underscore with <pre><small>_</small></pre></br>
     <img src="file://_/test.jpg">
   </p>
-  
+
 </body>

@@ -4,12 +4,12 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy project files
-COPY ["src/HtmlToDocx.csproj", "./"]
-COPY ["src/Program.cs", "./"]
-
-# Restore dependencies
+# Copy project file first for layer caching, then restore
+COPY src/*.csproj ./
 RUN dotnet restore "./HtmlToDocx.csproj"
+
+# Copy the rest of the source
+COPY src/*.cs ./
 
 # Build the application
 RUN dotnet build "./HtmlToDocx.csproj" -c Release -o /app/build

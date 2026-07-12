@@ -19,7 +19,7 @@ The application provides a simple, efficient way to convert HTML content to Micr
 
 **This software parses HTML as-is without any cleaning, validation, or sanitization.**
 
-For some cases, this could be considered a gaping security hole. 
+For some cases, this could be considered a gaping security hole.
 
 - IT WILL DOWNLOAD THINGS OVER THE INTERNET, IF LINKED IN HTML FILE
 - It does not perform HTML validation or cleanup
@@ -27,7 +27,7 @@ For some cases, this could be considered a gaping security hole.
 - It does not protect against malicious HTML content
 - Use with caution and only with trusted HTML sources
 
-TL,DR: if it fails on compilicated web page with a lot of JavaScript and CSS, use some other tool like bleach before conversion. 
+TL,DR: if it fails on compilicated web page with a lot of JavaScript and CSS, use some other tool like bleach before conversion.
 
 ## Installation
 
@@ -119,7 +119,7 @@ docker push iplweb/html2docx:latest
 This project includes automated Docker image building and pushing via GitHub Actions. The workflow is triggered on:
 
 - Push to `main`/`master` branches
-- Pull requests to `main`/`master` branches  
+- Pull requests to `main`/`master` branches
 - Release publications
 
 ## Usage
@@ -196,10 +196,13 @@ services:
     depends_on:
       - html-converter
     # ... your web app configuration
-  
+
   html-converter:
     image: iplweb/html2docx:latest
     # This service can be used by other containers
     # via Docker network: docker exec web-app html2docx ...
 ```
 
+## License
+
+This project is licensed under the [MIT License](LICENSE) — Copyright (c) 2025 Michał Pasternak.

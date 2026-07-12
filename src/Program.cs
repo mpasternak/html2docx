@@ -1,9 +1,7 @@
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using HtmlToOpenXml;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using static HtmlToDocx.Converter;
 
 string html;
 string outputFile;
@@ -138,7 +136,7 @@ catch (IOException ex) when (ex.Message.Contains("being used") || ex.Message.Con
     Console.Error.WriteLine();
     Console.Error.WriteLine("Error details:");
     Console.Error.WriteLine(ex.Message);
-    
+
     if (showStacktrace)
     {
         Console.Error.WriteLine();
@@ -171,24 +169,4 @@ catch (Exception ex)
 
 
     Environment.Exit(1);
-}
-
-// Wspólny rdzeń konwersji używany i przez tryb CLI, i przez tryb serwera HTTP.
-static async Task<byte[]> ConvertHtmlToDocxBytesAsync(string html)
-{
-    using var memoryStream = new MemoryStream();
-    using (var doc = WordprocessingDocument.Create(
-        memoryStream, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
-    {
-        var main = doc.AddMainDocumentPart();
-        main.Document = new DocumentFormat.OpenXml.Wordprocessing.Document(
-            new DocumentFormat.OpenXml.Wordprocessing.Body()
-        );
-
-        var converter = new HtmlConverter(main);
-        await converter.ParseBody(html);
-        main.Document.Save();
-    }
-
-    return memoryStream.ToArray();
 }

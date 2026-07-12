@@ -1,0 +1,23 @@
+# See https://pre-commit.com for more information.
+# Install: pip install pre-commit && pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  # .NET formatting. Requires the dotnet SDK on PATH (skipped automatically
+  # in environments without it via `SKIP=dotnet-format`).
+  - repo: local
+    hooks:
+      - id: dotnet-format
+        name: dotnet format
+        entry: dotnet format src/HtmlToDocx.csproj
+        language: system
+        pass_filenames: false
+        types_or: [c#]
