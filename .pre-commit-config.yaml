@@ -11,13 +11,15 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
 
-  # .NET formatting. Requires the dotnet SDK on PATH (skipped automatically
-  # in environments without it via `SKIP=dotnet-format`).
+  # .NET formatting. If the dotnet SDK is not on PATH, the hook prints a
+  # notice and passes (exit 0) instead of failing, so contributors without
+  # the SDK can still commit. When dotnet is present, its own exit code
+  # propagates, so genuine formatting errors still fail the hook.
   - repo: local
     hooks:
       - id: dotnet-format
         name: dotnet format
-        entry: dotnet format src/HtmlToDocx.csproj
+        entry: "bash -c 'if command -v dotnet >/dev/null 2>&1; then dotnet format src/HtmlToDocx.csproj; else echo \"[pre-commit] .NET SDK (dotnet) not found on PATH; skipping dotnet format. Install the .NET 8 SDK to enable C# formatting.\"; fi'"
         language: system
         pass_filenames: false
         types_or: [c#]

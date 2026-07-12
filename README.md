@@ -1,5 +1,7 @@
 # html2docx-dotnet
 
+[![CI](https://github.com/mpasternak/html2docx/actions/workflows/docker.yml/badge.svg)](https://github.com/mpasternak/html2docx/actions/workflows/docker.yml)
+
 ## Project Description
 
 html2docx-dotnet is a .NET 8.0 command-line tool that converts HTML documents to DOCX format. This project was created as an alternative to pandoc when experiencing core dump issues on VMWare ESX environments.
