@@ -24,5 +24,11 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+# Domyślny port trybu serwera HTTP (nadpisywalny env HTML2DOCX_PORT).
+# Odziedziczone ASPNETCORE_HTTP_PORTS=8080 jest ignorowane — bind steruje
+# jawny UseUrls() w Program.cs.
+ENV HTML2DOCX_PORT=3030
+EXPOSE 3030
+
 # Set the entrypoint for the container
 ENTRYPOINT ["dotnet", "HtmlToDocx.dll"]

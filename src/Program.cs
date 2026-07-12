@@ -36,10 +36,41 @@ if (args.Contains("--help"))
 
 if (args.Length == 0)
 {
-    // No arguments: read from stdin, write to stdout
-    using var reader = new StreamReader(Console.OpenStandardInput());
-    html = await reader.ReadToEndAsync();
-    outputFile = null; // Will use stdout
+    // No arguments: run as a long-lived HTTP server (sidecar mode).
+    // Port from HTML2DOCX_PORT (default 3030); stdin/CLI mode still available
+    // via the '-' argument below.
+    var port = Environment.GetEnvironmentVariable("HTML2DOCX_PORT");
+    if (string.IsNullOrWhiteSpace(port))
+    {
+        port = "3030";
+    }
+
+    var builder = WebApplication.CreateBuilder(args);
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+    builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 104857600);
+    var app = builder.Build();
+
+    app.MapGet("/health", () => Results.Ok("ok"));
+
+    app.MapPost("/convert", async (HttpRequest request) =>
+    {
+        using var reader = new StreamReader(request.Body);
+        var requestHtml = await reader.ReadToEndAsync();
+        try
+        {
+            var docx = await ConvertHtmlToDocxBytesAsync(requestHtml);
+            return Results.File(
+                docx,
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(detail: ex.Message, statusCode: 500);
+        }
+    });
+
+    app.Run();
+    return;
 }
 else if (args.Length == 1)
 {
