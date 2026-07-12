@@ -77,32 +77,18 @@ else
 
 try
 {
-    using var memoryStream = new MemoryStream();
-    {
-        using var doc = WordprocessingDocument.Create(memoryStream, DocumentFormat.OpenXml.WordprocessingDocumentType.Document);
-        var main = doc.AddMainDocumentPart();
-        main.Document = new DocumentFormat.OpenXml.Wordprocessing.Document(
-            new DocumentFormat.OpenXml.Wordprocessing.Body()
-        );
-
-        var converter = new HtmlConverter(main);
-        await converter.ParseBody(html);
-        main.Document.Save();
-    }
+    byte[] docx = await ConvertHtmlToDocxBytesAsync(html);
 
     if (outputFile == null)
     {
         // Write to stdout
-        memoryStream.Position = 0;
         using var stdout = Console.OpenStandardOutput();
-        await memoryStream.CopyToAsync(stdout);
+        await stdout.WriteAsync(docx);
     }
     else
     {
         // Write to file
-        memoryStream.Position = 0;
-        using var fileStream = File.Create(outputFile);
-        await memoryStream.CopyToAsync(fileStream);
+        await File.WriteAllBytesAsync(outputFile, docx);
     }
 }
 catch (IOException ex) when (ex.Message.Contains("being used") || ex.Message.Contains("locked") || ex.Message.Contains("access"))
@@ -143,7 +129,7 @@ catch (Exception ex)
     Console.Error.WriteLine();
     Console.Error.WriteLine("Error details:");
     Console.Error.WriteLine(ex.Message);
-    
+
     if (showStacktrace)
     {
         Console.Error.WriteLine();
@@ -154,4 +140,24 @@ catch (Exception ex)
 
 
     Environment.Exit(1);
+}
+
+// Wspólny rdzeń konwersji używany i przez tryb CLI, i przez tryb serwera HTTP.
+static async Task<byte[]> ConvertHtmlToDocxBytesAsync(string html)
+{
+    using var memoryStream = new MemoryStream();
+    using (var doc = WordprocessingDocument.Create(
+        memoryStream, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
+    {
+        var main = doc.AddMainDocumentPart();
+        main.Document = new DocumentFormat.OpenXml.Wordprocessing.Document(
+            new DocumentFormat.OpenXml.Wordprocessing.Body()
+        );
+
+        var converter = new HtmlConverter(main);
+        await converter.ParseBody(html);
+        main.Document.Save();
+    }
+
+    return memoryStream.ToArray();
 }
