@@ -79,8 +79,46 @@ jobs:
 
     - name: Test Docker image
       if: github.event_name != 'pull_request'
+      env:
+        IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
       run: |
-        docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest --help
-        echo "<h1>Test</h1><p>This is a test HTML file.</p>" | docker run --rm -i ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest > test_output.docx
-        file test_output.docx
-        ls -la test_output.docx
+        set -euo pipefail
+
+        # Sanity: --help prints usage and exits (it does NOT start the server).
+        docker run --rm "$IMAGE" --help
+
+        # CLI mode: an explicit '-' reads HTML from stdin and writes the DOCX to
+        # stdout. Passing NO arguments starts the long-lived HTTP server and
+        # blocks forever — that is what used to hang this step until the 6h
+        # Actions limit and get the whole run cancelled.
+        echo "<h1>Test</h1><p>This is a test HTML file.</p>" \
+          | docker run --rm -i "$IMAGE" - > cli_output.docx
+        [ "$(head -c4 cli_output.docx | od -An -tx1 | tr -d ' \n')" = "504b0304" ] \
+          || { echo "CLI output is not a DOCX (missing PK zip magic)"; exit 1; }
+        file cli_output.docx
+
+        # Server mode (sidecar, the mode consumers actually run): no arguments
+        # -> Kestrel on :3030. Run detached so the step never blocks; clean the
+        # container up on exit regardless of outcome.
+        docker run -d --rm --name h2d-test -p 3030:3030 "$IMAGE"
+        trap 'docker rm -f h2d-test >/dev/null 2>&1 || true' EXIT
+
+        # Wait for /health (up to ~30s) before hitting /convert.
+        for i in $(seq 1 30); do
+          if curl -fsS http://localhost:3030/health >/dev/null 2>&1; then break; fi
+          if [ "$i" -eq 30 ]; then
+            echo "server did not become healthy in time"; docker logs h2d-test; exit 1
+          fi
+          sleep 1
+        done
+
+        # POST /convert must return a DOCX.
+        echo "<h1>Server</h1><p>Converted over HTTP.</p>" \
+          | curl -fsS -X POST --data-binary @- \
+              -H 'Content-Type: text/html; charset=utf-8' \
+              http://localhost:3030/convert -o server_output.docx
+        [ "$(head -c4 server_output.docx | od -An -tx1 | tr -d ' \n')" = "504b0304" ] \
+          || { echo "server /convert output is not a DOCX"; exit 1; }
+        file server_output.docx
+
+        echo "OK: --help, CLI ('-') and HTTP server modes all work."
